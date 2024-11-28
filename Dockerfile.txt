@@ -19,7 +19,7 @@ RUN curl -sSL https://ollama.com/download | bash
 RUN /bin/bash -c "ollama pull llama3.2:latest"
 
 # Copy the requirements.txt file into the container
-COPY requirements.txt .
+COPY requirements.txt . 
 
 # Install Python dependencies from the requirements file
 RUN pip install --no-cache-dir -r requirements.txt
@@ -36,5 +36,5 @@ EXPOSE 5000
 # Set environment variables (optional)
 ENV FLASK_ENV=production
 
-# Run the Flask application with Gunicorn (recommended for production)
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# Start Ollama and then the Flask application with Gunicorn
+CMD /bin/bash -c "ollama start && gunicorn -w 4 -b 0.0.0.0:5000 app:app"
