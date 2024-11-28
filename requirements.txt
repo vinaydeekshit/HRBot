@@ -1,10 +1,12 @@
-Flask==3.0.3
+Flask==2.3.2
 sentence-transformers==3.3.0
 huggingface-hub==0.26.2
 torch==2.5.1
 spacy==3.7.4
-gunicorn==22.0.0
+gunicorn==20.1.0
 pdfplumber==0.11.1
-Werkzeug==3.0.3
-langchain==0.0.234  # Updated version for compatibility
+Werkzeug==2.3.3
+langchain-community==0.2.6
+langchain==0.2.6
 ollama==0.2.0
+
