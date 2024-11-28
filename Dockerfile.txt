@@ -1,10 +1,17 @@
+
+
+
+
+
+
+
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Install necessary system dependencies for curl and spaCy
+# Install necessary system dependencies for curl, spaCy, and others
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gcc \
@@ -14,6 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Ollama (replace with actual installation command if different)
 RUN curl -sSL https://ollama.com/download | bash
+
+# Install Llama 3.2 model (this assumes Ollama installs the latest version of Llama)
+RUN ollama pull llama3.2:latest
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
@@ -33,5 +43,6 @@ EXPOSE 5000
 # Set environment variables (optional)
 ENV FLASK_ENV=production
 
-# Run the Flask application
-CMD ["python", "app.py"]
+# Run the Flask application with Gunicorn (recommended for production)
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+
