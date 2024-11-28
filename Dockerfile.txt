@@ -1,0 +1,31 @@
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama (replace with actual installation command if different)
+RUN curl -sSL https://ollama.com/download | bash
+
+# Copy the requirements.txt into the container
+COPY requirements.txt .
+
+# Install Python dependencies from the requirements file
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Expose port 5000 (Flask default port)
+EXPOSE 5000
+
+# Set environment variables (optional)
+ENV FLASK_ENV=production
+
+# Run the Flask application
+CMD ["python", "app.py"]

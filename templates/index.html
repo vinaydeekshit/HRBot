@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Page Chatbot with Sidebar</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f3f4f6; 
+        }
+
+        .chat-container {
+            background: #ffffff;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            background-color: rgb(104, 104, 150);
+            padding: 10px;
+            font-size: 15px;
+            color: #000; 
+        }
+
+        .sidebar-icon {
+            cursor: pointer;
+            font-size: 24px;
+            margin-left:10px;
+            color: white;
+        }
+
+        .nav-logo {
+            height: 40px; 
+            margin-right: 8px; 
+        }
+
+        .header-title {
+            font-size: 20px; 
+            font-weight: bold;
+        }
+
+        .chat-box {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+        }
+
+        .message-pair {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; 
+        }
+
+        .user-message {
+            align-self: flex-start; 
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            font-size: 8px;
+            margin-bottom: 5px; 
+        }
+
+        .bot-message {
+            align-self: flex-end; 
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            font-size: 8px;
+            line-height: 1.4;
+        }
+
+        #welcome-container {
+            text-align: center; 
+        }
+
+        .logo {
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
+
+        #welcome-text {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .user-message .message {
+            background-color: #88df46;
+            padding: 14px;
+            border-radius: 10px;
+            max-width: 90%;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .bot-message .message {
+            background-color: rgb(104, 104, 150);
+            padding: 14px;
+            border-radius: 20px;
+            max-width: 90%;
+            font-size: 14px;
+            line-height: 1.4;
+            color: white;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 20px;
+            background-color: rgb(104, 104, 150);
+            border-top: 2px solid #e1e1e1;
+        }
+
+        #question {
+            flex-grow: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #f72ec4, #00c5ff);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .spinner {
+            grid-column: 2; 
+            justify-self: end;
+            margin: 10px 0;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        
+        .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background-color:rgb(104, 104, 150);
+    color: black; 
+    transition: all 0.3s;
+    padding-top: 60px;
+    z-index: 1000;
+}
+
+.sidebar.open {
+    left: 0; 
+}
+
+
+        .sidebar a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: 0.3s;
+            border-radius: 10px;
+            margin: 5px 0; 
+            align-items: left;
+            margin-right:20px;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover {
+            transform: scale(1.1); 
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+
+        .sidebar-header {
+            font-size: 20px;
+            margin-bottom:5px;
+            font-weight: bold;
+            padding: 15px 32px;
+            color:white;
+        }
+
+       
+
+    </style>
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener for Enter key to submit the question
+    document.getElementById("question").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            getAnswer();  // Call getAnswer when Enter key is pressed
+        }
+    });
+
+    // Close the sidebar when clicking outside
+    document.addEventListener("click", function(event) {
+        const sidebar = document.getElementById("sidebar");
+        const sidebarIcon = document.querySelector(".sidebar-icon");
+
+        if (!sidebar.contains(event.target) && !sidebarIcon.contains(event.target)) {
+            sidebar.classList.remove("open");
+        }
+    });
+});
+
+// Toggle Sidebar
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+}
+
+// Get Answer from server
+async function getAnswer() {
+    const question = document.getElementById("question").value;
+    if (question.trim() === "") {
+        return;
+    }
+
+    const chatBox = document.querySelector(".chat-box");
+    const welcomeContainer = document.getElementById("welcome-container");
+
+    // Hide welcome message if present
+    if (welcomeContainer && welcomeContainer.style.display !== "none") {
+        welcomeContainer.style.display = "none";
+    }
+
+    // Create and display user's message
+    const userMessage = document.createElement("div");
+    userMessage.classList.add("user-message");
+    userMessage.innerHTML = `<div class="message">${question}</div>`;
+    chatBox.appendChild(userMessage);
+
+    // Clear the input field
+    document.getElementById("question").value = "";
+
+    // Create a spinner while waiting for the response
+    const spinner = document.createElement("div");
+    spinner.classList.add("spinner");
+    chatBox.appendChild(spinner);
+
+    // Scroll to the bottom of the chat
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        // Fetch the answer from the server
+        const response = await fetch('/get_answer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question: question })
+        });
+
+        // Check if the response is successful
+        if (response.ok) {
+            const data = await response.json();
+
+            // Remove spinner
+            chatBox.removeChild(spinner);
+
+            // Display the bot's message
+            const botMessage = document.createElement("div");
+            botMessage.classList.add("bot-message");
+            botMessage.innerHTML = `<div class="message">${data.answer}</div>`;
+            chatBox.appendChild(botMessage);
+        } else {
+            // Handle error from server
+            chatBox.removeChild(spinner);
+            const errorMessage = document.createElement("div");
+            errorMessage.classList.add("bot-message");
+            errorMessage.innerHTML = `<div class="message">Sorry, something went wrong. Please try again later.</div>`;
+            chatBox.appendChild(errorMessage);
+        }
+    } catch (error) {
+        // Handle any unexpected errors
+        chatBox.removeChild(spinner);
+        const errorMessage = document.createElement("div");
+        errorMessage.classList.add("bot-message");
+        errorMessage.innerHTML = `<div class="message">Sorry, something went wrong. Please try again later.</div>`;
+        chatBox.appendChild(errorMessage);
+    }
+
+    // Scroll to the bottom after adding new messages
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+</script>
+
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span class="sidebar-icon" onclick="toggleSidebar()">&#9776;</span>  <!-- Sidebar Icon -->
+            <img id="exampleimg" alt="Logo" class="nav-logo" src="{{ url_for('static', filename='images/Airportlogo.png') }}">
+        </div>
+        
+        <div class="chat-box" id="chat-box">
+            <div id="welcome-container">
+                <img id="img" alt="bot-logo" class="logo" src="{{ url_for('static', filename='images/bot.png') }}">
+                <div id="welcome-text">
+                    Welcome to our service, How can I help you today?
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="question" placeholder="Ask your question...">
+            <button onclick="getAnswer()">Ask</button>
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar">  
+        <div class="sidebar-header">
+            Generalized Documents
+        </div>
+        <a href="{{ url_for('static', filename='Domestic Travel Policy Annexure - I.docx') }}" target="_blank" class="doc1">Domestic Travel Policy</a>
+        <a href="{{ url_for('static', filename='Leave Policy Annexure - I.docx') }}" target="_blank" class="doc2">Leave Policy Anexure</a>
+        <a href="{{ url_for('static', filename='Letter of Long Term Assignment.docx') }}" target="_blank" class="doc3">Letter Of Long Term Assignment</a>
+        <a href="{{ url_for('static', filename='Letter of Short Term Assignment.docx') }}" target="_blank" class="doc4">Letter Of Short Term Assignment</a>
+    </div>    
+</body>
+</html>
