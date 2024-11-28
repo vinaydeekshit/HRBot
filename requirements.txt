@@ -3,6 +3,6 @@ pdfplumber==0.7.6
 sentence-transformers==2.2.0
 langchain==0.0.168
 spacy==3.4.3
-torch==1.10.0
-ollama==0.2.0  # Make sure to use the correct version of Ollama
+torch==2.0.0   # Use a more recent stable version of PyTorch
+ollama==0.2.0
 gunicorn==20.1.0
