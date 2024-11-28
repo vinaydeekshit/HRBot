@@ -2,7 +2,7 @@ Flask==2.3.2
 sentence-transformers==3.3.0
 huggingface-hub==0.26.2
 torch==2.5.1
-spacy==3.7.4
+spacy==3.5.3
 gunicorn==20.1.0
 pdfplumber==0.11.1
 Werkzeug==2.3.3
