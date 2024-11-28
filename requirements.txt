@@ -1,10 +1,10 @@
-Flask==2.3.3  # Latest stable version of Flask
-pdfplumber==0.7.6  # Latest stable version (no updates needed)
-sentence-transformers==2.2.2  # Minor update to the latest in the 2.2.x series
-langchain==0.0.198  # Latest stable version of LangChain
-spacy==3.6.0  # Latest stable version of spaCy
-torch==2.1.0  # Latest stable version of PyTorch
-ollama==0.2.0  # Latest stable version (no updates needed)
-gunicorn==20.1.1  # Minor update to the latest version of Gunicorn
-Werkzeug==2.3.4  # Latest stable version of Werkzeug
-huggingface_hub==0.15.0  # Minor update to the latest version of Hugging Face Hub
+Flask==2.2.2
+pdfplumber==0.7.6
+sentence-transformers==2.2.0
+langchain==0.0.168
+spacy==3.4.3
+torch==2.0.0
+ollama==0.2.0
+gunicorn==20.1.0
+Werkzeug==2.3.3  # Updated to fix the conflict with Flask
+huggingface_hub==0.15.0  # Updated to avoid ImportError with sentence-transformers
