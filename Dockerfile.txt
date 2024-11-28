@@ -4,19 +4,23 @@ FROM python:3.10-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y \
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama (replace with actual installation command if different)
 RUN curl -sSL https://ollama.com/download | bash
 
-# Copy the requirements.txt into the container
+# Copy the requirements.txt file into the container
 COPY requirements.txt .
 
 # Install Python dependencies from the requirements file
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Download and install the spaCy language model
+RUN python -m spacy download en_core_web_sm
 
 # Copy the rest of the application code into the container
 COPY . .
